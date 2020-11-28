@@ -8,7 +8,7 @@ const args = location.search.replace(/^\?/, '').split('&').reduce(function (o, p
   return o;
 }, {});
 
-mapboxgl.accessToken = args.access_token || localStorage.accessToken;
+mapboxgl.accessToken = 'pk.eyJ1IjoidzhyIiwiYSI6ImNraTFtaXV1dDA5YWcyd212MGdkb2NiMGgifQ.9gTiDUGipxgdnlZCv9qvoA';
 const mapEl = document.getElementById('map');
 
 const map = new mapboxgl.Map({
@@ -38,7 +38,7 @@ map.on('load', function () {
       type: 'FeatureCollection',
       features: []
     }
-  })
+  });
 
   layers.forEach(function (layer, i) {
     map.addLayer({
@@ -68,6 +68,17 @@ map.on('load', function () {
       'line-opacity': 0.25
     }
   }, 'road-path');
+
+
+  map.addLayer({
+    'id': 'distances',
+    'type': 'symbol',
+    'source': 'circle',
+    'layout': {
+      'text-field': ['get', 'distance'],
+      'symbol-placement': 'line-center'
+    }
+  });
 });
 
 /** @type {mapboxgl.Marker} */
@@ -90,7 +101,13 @@ map.on('click', (e) => {
 
   map.getSource('circle').setData({
     type: 'FeatureCollection',
-    features: Array(19).fill(0).map((_, i) => createCircle(coords, i + 1))
+    features: Array(19).fill(0)
+      .map((_, i) => {
+        const circle = createCircle(coords, i + 1);
+        circle.properties = circle.properties || {};
+        circle.properties.distance = `${i + 1}km`;
+        return circle;
+      })
   });
 
   const params = {
