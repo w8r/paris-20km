@@ -4,10 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html",
-    "server": "./node_modules/.bin/galton data/ile-de-france-latest.osrm",
-    "osrm:foot": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/foot.lua data/ile-de-france-latest.osm.pbf && ./node_modules/osrm/lib/binding/osrm-contract data/ile-de-france-latest.osrm",
-    "osrm:bike": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/bicycle.lua data/ile-de-france-latest.osm.pbf && ./node_modules/osrm/lib/binding/osrm-contract data/ile-de-france-latest.osrm"
+    "dev": "parcel index.html",
+    "build": "parcel build index.html",
+    "start": "nodemon server/index.js",
+    "osrm:foot": "npm run osrm:foot:build && nom run osrm:foot:link",
+    "osrm:foot:build": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/foot.lua data/foot/ile-de-france-latest.osm.pbf",
+    "osrm:foot:link": "./node_modules/osrm/lib/binding/osrm-contract data/foot/ile-de-france-latest.osrm",
+    "osrm:bike": "npm run osrm:bike:build && npm run osrm:bike:link",
+    "osrm:bike:build": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/bicycle.lua data/bike/ile-de-france-latest.osm.pbf",
+    "osrm:bike:link": "./node_modules/osrm/lib/binding/osrm-contract data/bike/ile-de-france-latest.osrm"
   },
   "keywords": [],
   "author": "",
@@ -15,10 +20,15 @@
   "dependencies": {
     "@turf/circle": "^6.0.1",
     "@types/mapbox-gl": "^1.12.8",
+    "express": "^4.17.1",
     "galton": "^5.18.0",
-    "mapbox-gl": "^1.13.0"
+    "mapbox-gl": "^1.13.0",
+    "minimist": "^1.2.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "body-parser": "^1.19.0",
+    "nodemon": "^2.0.6",
     "parcel": "^1.12.4",
     "serve": "^11.3.2"
   }

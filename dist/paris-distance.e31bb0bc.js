@@ -1163,20 +1163,22 @@ var _circle = _interopRequireDefault(require("@turf/circle"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var args = location.search.replace(/^\?/, '').split('&').reduce(function (o, param) {
+//import mapboxgl from 'mapbox-gl';
+//import mapboxgl from 'mapbox-gl';
+const args = location.search.replace(/^\?/, '').split('&').reduce(function (o, param) {
   var keyvalue = param.split('=');
   o[keyvalue[0]] = keyvalue[1];
   return o;
 }, {});
 mapboxgl.accessToken = args.access_token || localStorage.accessToken;
-var mapEl = document.getElementById('map');
-var map = new mapboxgl.Map({
+const mapEl = document.getElementById('map');
+const map = new mapboxgl.Map({
   container: mapEl,
   style: 'mapbox://styles/mapbox/light-v8',
   center: [2.326986, 48.857775],
   zoom: 12
 });
-var layers = [[30, '#00aaFF', 0.1], [20, '#00aaFF', 0.2], [10, '#00aaFF', 0.8]];
+const layers = [[30, '#00aaFF', 0.1], [20, '#00aaFF', 0.2], [10, '#00aaFF', 0.8]];
 map.on('load', function () {
   map.addSource('grid', {
     type: 'geojson',
@@ -1188,11 +1190,8 @@ map.on('load', function () {
   map.addSource('circle', {
     'type': 'geojson',
     data: {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[[]]]
-      }
+      type: 'FeatureCollection',
+      features: []
     }
   });
   layers.forEach(function (layer, i) {
@@ -1214,21 +1213,27 @@ map.on('load', function () {
     source: 'circle',
     paint: {
       'line-color': 'red',
-      'line-width': 2
+      'line-width': 1,
+      'line-opacity': 0.25
     }
-  });
+  }, 'road-path');
 });
-var marker;
-map.on('click', function (e) {
+/** @type {mapboxgl.Marker} */
+
+let marker;
+map.on('click', e => {
   mapEl.classList.add('loading');
-  var intervals = Array.from(document.querySelectorAll('.intervals input[type="checkbox"]:checked')).map(function (el) {
-    return el.value;
-  });
-  var coords = [e.lngLat.lng, e.lngLat.lat];
+  const intervals = Array.from(document.querySelectorAll('.intervals input[type="checkbox"]:checked')).map(el => el.value);
+  const profile = document.querySelector('input[name="profile"]:checked').value;
+  console.log(profile);
+  const coords = [e.lngLat.lng, e.lngLat.lat];
   if (marker) marker.remove();
   marker = new mapboxgl.Marker().setLngLat([e.lngLat.lng, e.lngLat.lat]).addTo(map);
-  map.getSource('circle').setData((0, _circle.default)(coords, 2));
-  var params = {
+  map.getSource('circle').setData({
+    type: 'FeatureCollection',
+    features: Array(19).fill(0).map((_, i) => (0, _circle.default)(coords, i + 1))
+  });
+  const params = {
     lng: e.lngLat.lng,
     lat: e.lngLat.lat,
     radius: document.getElementById('radius').value,
@@ -1236,24 +1241,18 @@ map.on('click', function (e) {
     concavity: document.getElementById('concavity').value,
     lengthThreshold: document.getElementById('lengthThreshold').value
   };
-  var url = new URL("http://localhost:4000");
-  Object.keys(params).forEach(function (key) {
-    return url.searchParams.append(key, params[key]);
-  });
-  (intervals.length > 0 ? intervals : [10, 20, 30]).forEach(function (interval) {
-    return url.searchParams.append('intervals', interval);
-  });
+  const url = new URL(`${location.origin}/api/${profile}`);
+  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+  (intervals.length > 0 ? intervals : [10, 20, 30]).forEach(interval => url.searchParams.append('intervals', interval));
   console.groupCollapsed(e.lngLat.lng, e.lngLat.lat);
   console.time('request');
-  fetch(url).then(function (response) {
-    return response.json();
-  }).then(function (data) {
+  fetch(url).then(response => response.json()).then(data => {
     console.log(data);
     console.timeEnd('request');
     console.groupEnd();
     map.getSource('grid').setData(data);
     mapEl.classList.remove('loading');
-  }).catch(function (error) {
+  }).catch(error => {
     console.error(error);
     mapEl.classList.remove('loading');
   });
@@ -1302,7 +1301,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50520" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59020" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

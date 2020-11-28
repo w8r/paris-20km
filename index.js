@@ -1,4 +1,6 @@
 import createCircle from '@turf/circle';
+//import mapboxgl from 'mapbox-gl';
+//import mapboxgl from 'mapbox-gl';
 
 const args = location.search.replace(/^\?/, '').split('&').reduce(function (o, param) {
   var keyvalue = param.split('=');
@@ -7,18 +9,16 @@ const args = location.search.replace(/^\?/, '').split('&').reduce(function (o, p
 }, {});
 
 mapboxgl.accessToken = args.access_token || localStorage.accessToken;
-var mapEl = document.getElementById('map');
+const mapEl = document.getElementById('map');
 
-var map = new mapboxgl.Map({
+const map = new mapboxgl.Map({
   container: mapEl,
   style: 'mapbox://styles/mapbox/light-v8',
   center: [2.326986, 48.857775],
   zoom: 12
 });
 
-
-
-var layers = [
+const layers = [
   [30, '#00aaFF', 0.1],
   [20, '#00aaFF', 0.2],
   [10, '#00aaFF', 0.8],
@@ -35,11 +35,8 @@ map.on('load', function () {
   map.addSource('circle', {
     'type': 'geojson',
     data: {
-      type: 'Feature',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[[]]]
-      }
+      type: 'FeatureCollection',
+      features: []
     }
   })
 
@@ -67,17 +64,22 @@ map.on('load', function () {
     source: 'circle',
     paint: {
       'line-color': 'red',
-      'line-width': 2
+      'line-width': 1,
+      'line-opacity': 0.25
     }
-  })
+  }, 'road-path');
 });
 
+/** @type {mapboxgl.Marker} */
 let marker;
 map.on('click', (e) => {
   mapEl.classList.add('loading');
-  var intervals = Array.from(
+  const intervals = Array.from(
     document.querySelectorAll('.intervals input[type="checkbox"]:checked')
-  ).map(function (el) { return el.value });
+  ).map(el => el.value);
+
+  const profile = document.querySelector('input[name="profile"]:checked').value;
+  console.log(profile);
 
   const coords = [e.lngLat.lng, e.lngLat.lat];
 
@@ -86,7 +88,10 @@ map.on('click', (e) => {
     .setLngLat([e.lngLat.lng, e.lngLat.lat])
     .addTo(map);
 
-  map.getSource('circle').setData(createCircle(coords, 2));
+  map.getSource('circle').setData({
+    type: 'FeatureCollection',
+    features: Array(19).fill(0).map((_, i) => createCircle(coords, i + 1))
+  });
 
   const params = {
     lng: e.lngLat.lng,
@@ -97,7 +102,7 @@ map.on('click', (e) => {
     lengthThreshold: document.getElementById('lengthThreshold').value,
   };
 
-  var url = new URL("http://localhost:4000");
+  const url = new URL(`${location.origin}/api/${profile}`);
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   (intervals.length > 0 ?
     intervals :
