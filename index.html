@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8' />
+  <title></title>
+  <meta name="viewport"
+    content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <script
+    src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css"
+    rel="stylesheet" />
+  <link href='https://www.mapbox.com/base/latest/base.css' rel='stylesheet' />
+  <style>
+    #app {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    #map {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .mapboxgl-popup-content {
+      color: #000
+    }
+  </style>
+</head>
+
+<body>
+  <div id='app' class='col12 contain fill-navy dark clip'>
+    <div id='map'></div>
+    <div class='pin-right pad2'>
+      <a href='#settings' class='button' style="line-height: 10px;"><svg
+          viewBox="0 0 100 80" width="20" height="20">
+          <rect width="100" height="20" rx="8"></rect>
+          <rect y="30" width="100" height="20" rx="8"></rect>
+          <rect y="60" width="100" height="20" rx="8"></rect>
+        </svg></a>
+    </div>
+    <div id='settings'
+      class='col4 pad2 fill-darken3 pin-left offcanvas-left animate scroll-styled'>
+      <a href='#' class='fill-darken2 pad1 icon close button fr'></a>
+      <div class='clearfix'></div>
+      <form>
+        <fieldset>
+          <label for='radius'>Radius</label>
+          <input id='radius' type='number' value='6' class='stretch' />
+        </fieldset>
+        <fieldset>
+          <label for='cellSize'>Cell size</label>
+          <input id='cellSize' type='number' value='0.2' class='stretch' />
+        </fieldset>
+        <fieldset>
+          <label for='concavity'>Concavity</label>
+          <input id='concavity' type='number' value='2' class='stretch' />
+        </fieldset>
+        <fieldset>
+          <label for='lengthThreshold'>Length threshold</label>
+          <input id='lengthThreshold' type='number' value='0' class='stretch' />
+        </fieldset>
+        </fieldset>
+        <fieldset class='intervals checkbox-pill clearfix'>
+          <input type='checkbox' id='i10' checked='checked' value=10>
+          <label for='i10' class='button icon check quiet'>10m</label>
+          <input type='checkbox' id='i20' checked='checked' value=20>
+          <label for='i20' class='button icon check quiet'>20m</label>
+          <input type='checkbox' id='i30' checked='checked' value=30>
+          <label for='i30' class='button icon check quiet'>30m</label>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+
+</body>
+
+</html>

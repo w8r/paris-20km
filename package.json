@@ -1,0 +1,25 @@
+{
+  "name": "paris-20km",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "server": "./node_modules/.bin/galton data/ile-de-france-latest.osrm",
+    "osrm:foot": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/foot.lua data/ile-de-france-latest.osm.pbf && ./node_modules/osrm/lib/binding/osrm-contract data/ile-de-france-latest.osrm",
+    "osrm:bike": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/bicycle.lua data/ile-de-france-latest.osm.pbf && ./node_modules/osrm/lib/binding/osrm-contract data/ile-de-france-latest.osrm"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/circle": "^6.0.1",
+    "@types/mapbox-gl": "^1.12.8",
+    "galton": "^5.18.0",
+    "mapbox-gl": "^1.13.0"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4",
+    "serve": "^11.3.2"
+  }
+}
