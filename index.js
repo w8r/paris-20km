@@ -112,11 +112,11 @@ map.on('click', (e) => {
 
   const params = {
     lng: e.lngLat.lng,
-    lat: e.lngLat.lat,
-    radius: document.getElementById('radius').value,
-    cellSize: document.getElementById('cellSize').value,
-    concavity: document.getElementById('concavity').value,
-    lengthThreshold: document.getElementById('lengthThreshold').value,
+    lat: e.lngLat.lat
+    // radius: document.getElementById('radius').value,
+    // cellSize: document.getElementById('cellSize').value,
+    // concavity: document.getElementById('concavity').value,
+    //lengthThreshold: document.getElementById('lengthThreshold').value,
   };
 
   const url = new URL(`${location.origin}/api/${profile}`);
