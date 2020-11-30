@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "parcel index.html",
-    "build": "rm -rf dist/* && parcel build index.html",
+    "build": "./prepare.sh && npm run build-app",
+    "build-app": "rm -rf dist/* && parcel build index.html",
     "start": "nodemon server/index.js",
     "osrm:foot": "npm run osrm:foot:build && nom run osrm:foot:link",
     "osrm:foot:build": "./node_modules/osrm/lib/binding/osrm-extract -p ./node_modules/osrm/profiles/foot.lua data/foot/ile-de-france-latest.osm.pbf",
