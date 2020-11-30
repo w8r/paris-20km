@@ -2,11 +2,19 @@ import createCircle from '@turf/circle';
 //import mapboxgl from 'mapbox-gl';
 //import mapboxgl from 'mapbox-gl';
 
-const args = location.search.replace(/^\?/, '').split('&').reduce(function (o, param) {
-  var keyvalue = param.split('=');
-  o[keyvalue[0]] = keyvalue[1];
-  return o;
-}, {});
+function parseQuery(query) {
+  return query.split('&').reduce((o, param) => {
+    const keyvalue = param.split('=');
+    o[keyvalue[0]] = keyvalue[1];
+    return o;
+  }, {});
+}
+
+const args = parseQuery(location.search.replace(/^\?/, ''));
+
+const hashArgs = parseQuery(location.hash.substring(1));
+
+console.log(args, hashArgs);
 
 mapboxgl.accessToken = 'pk.eyJ1IjoidzhyIiwiYSI6ImNraTFtaXV1dDA5YWcyd212MGdkb2NiMGgifQ.9gTiDUGipxgdnlZCv9qvoA';
 const mapEl = document.getElementById('map');
@@ -19,6 +27,9 @@ const map = new mapboxgl.Map({
 });
 
 const layers = [
+  [120, '#00aaFF', 0.012],
+  [90, '#00aaFF', 0.025],
+  [60, '#00aaFF', 0.05],
   [30, '#00aaFF', 0.1],
   [20, '#00aaFF', 0.2],
   [10, '#00aaFF', 0.8],
@@ -79,24 +90,29 @@ map.on('load', function () {
       'symbol-placement': 'line-center'
     }
   });
+
+  if (hashArgs.lat && hashArgs.lng) {
+    show(parseFloat(hashArgs.lng), parseFloat(hashArgs.lat));
+  }
 });
 
-/** @type {mapboxgl.Marker} */
-let marker;
-map.on('click', (e) => {
+/**
+ * @param {number} lng
+ * @param {number} lat
+ */
+function show(lng, lat) {
   mapEl.classList.add('loading');
+
+  window.location.hash = `&lat=${lat}&lng=${lng}`;
   const intervals = Array.from(
     document.querySelectorAll('.intervals input[type="checkbox"]:checked')
   ).map(el => el.value);
-
-  const profile = document.querySelector('input[name="profile"]:checked').value;
-  console.log(profile);
-
-  const coords = [e.lngLat.lng, e.lngLat.lat];
-
+  const profileEl = document.querySelector('input[name="profile"]:checked');
+  const profile = profileEl.value;
+  const coords = [lng, lat];
   if (marker) marker.remove();
   marker = new mapboxgl.Marker()
-    .setLngLat([e.lngLat.lng, e.lngLat.lat])
+    .setLngLat([lng, lat])
     .addTo(map);
 
   map.getSource('circle').setData({
@@ -110,13 +126,20 @@ map.on('click', (e) => {
       })
   });
 
+  const radius = intervals.reduce((acc, interval) => {
+    if (interval > 30 && profile === 'bike') acc = 12;
+    if (interval > 60) acc = 20;
+    return acc;
+  }, 6);
+
   const params = {
-    lng: e.lngLat.lng,
-    lat: e.lngLat.lat
-    // radius: document.getElementById('radius').value,
+    lng,
+    lat,
+    radius,
+    deintersect: false
     // cellSize: document.getElementById('cellSize').value,
     // concavity: document.getElementById('concavity').value,
-    //lengthThreshold: document.getElementById('lengthThreshold').value,
+    // lengthThreshold: document.getElementById('lengthThreshold').value,
   };
 
   const url = new URL(`${location.origin}/api/${profile}`);
@@ -125,7 +148,9 @@ map.on('click', (e) => {
     intervals :
     [10, 20, 30]).forEach(interval => url.searchParams.append('intervals', interval));
 
-  console.groupCollapsed(e.lngLat.lng, e.lngLat.lat);
+  console.log(url);
+
+  console.groupCollapsed(lng, lat);
   console.time('request');
   fetch(url)
     .then(response => response.json())
@@ -140,24 +165,35 @@ map.on('click', (e) => {
       console.error(error);
       mapEl.classList.remove('loading');
     });
-});
+}
+
+/** @type {mapboxgl.Marker} */
+let marker;
+map.on('click', (evt) => show(evt.lngLat.lng, evt.lngLat.lat));
+
+
 
 var popup = new mapboxgl.Popup({
   closeButton: false,
   closeOnClick: false
 });
 
-// map.on('mousemove', function (e) {
-//   var features = map.queryRenderedFeatures(e.point, {
-//     layers: ['grid-0', 'grid-1', 'grid-2', 'grid-3', 'grid-4', 'grid-5']
-//   });
+map.on('mousemove', (evt) => {
+  requestAnimationFrame(() => {
+    const features = map.queryRenderedFeatures(evt.point, {
+      layers: ['grid-0', 'grid-1', 'grid-2', 'grid-3', 'grid-4', 'grid-5']
+    });
 
-//   if (!features.length) {
-//     popup.remove();
-//     return;
-//   }
-//   var feature = features[0];
-//   popup.setLngLat(e.lngLat)
-//     .setHTML(feature.properties.time + ' minutes')
-//     .addTo(map);
-// });
+    const profileEl = document.querySelector('input[name="profile"]:checked');
+    const profile = profileEl.value === 'foot' ? 'walk' : 'bike';
+
+    if (!features.length) {
+      popup.remove();
+      return;
+    }
+    const feature = features[0];
+    popup.setLngLat(evt.lngLat)
+      .setHTML(`<span class="icon ${profile}"></span> ${feature.properties.time} minutes`)
+      .addTo(map);
+  });
+});

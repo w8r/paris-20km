@@ -35,6 +35,11 @@
     .checkbox-pill label {
       margin: 10px;
     }
+
+    #menu {
+      line-height: 10px;
+      background-color: transparent;
+    }
   </style>
 </head>
 
@@ -42,8 +47,8 @@
   <div id='app' class='col12 contain fill-navy dark clip'>
     <div id='map'></div>
     <div class='pin-right pad2'>
-      <a href='#settings' class='button' style="line-height: 10px;"><svg
-          viewBox="0 0 100 80" width="20" height="20">
+      <a id="menu" href='#settings' class='button'><svg viewBox="0 0 100 80"
+          width="20" height="20">
           <rect width="100" height="20" rx="8"></rect>
           <rect y="30" width="100" height="20" rx="8"></rect>
           <rect y="60" width="100" height="20" rx="8"></rect>
@@ -54,23 +59,6 @@
       <a href='#' class='fill-darken2 pad1 icon close button fr'></a>
       <div class='clearfix'></div>
       <form>
-        <!--
-        <fieldset>
-          <label for='radius'>Radius</label>
-          <input id='radius' type='number' value='6' class='stretch' />
-        </fieldset>
-        <fieldset>
-          <label for='cellSize'>Cell size</label>
-          <input id='cellSize' type='number' value='0.2' class='stretch' />
-        </fieldset>
-        <fieldset>
-          <label for='concavity'>Concavity</label>
-          <input id='concavity' type='number' value='2' class='stretch' />
-        </fieldset>
-        <fieldset>
-          <label for='lengthThreshold'>Length threshold</label>
-          <input id='lengthThreshold' type='number' value='0' class='stretch' />
-        </fieldset>-->
         <div class='rounded-toggle inline'>
           <input type='radio' id='bike' name='profile' value='bike'
             checked='checked'>
@@ -85,11 +73,11 @@
           <label for='i20' class='button icon check quiet'>20min</label>
           <input type='checkbox' id='i30' checked='checked' value=30>
           <label for='i30' class='button icon check quiet'>30min</label>
-          <input type='checkbox' id='i30' checked='checked' value=60>
+          <input type='checkbox' id='i60' value=60>
           <label for='i60' class='button icon check quiet'>1h</label>
-          <input type='checkbox' id='i30' checked='checked' value=90>
+          <input type='checkbox' id='i90' value=90>
           <label for='i90' class='button icon check quiet'>1.5h</label>
-          <input type='checkbox' id='i30' checked='checked' value=120>
+          <input type='checkbox' id='i120' value=120>
           <label for='i120' class='button icon check quiet'>2h</label>
         </fieldset>
       </form>
