@@ -8,7 +8,6 @@ echo "Done"
 
 ls -lah data;
 
-cd data && unzip foot.zip;
-cd data && unzip bike.zip;
+cd data && unzip foot.zip && unzip bike.zip;
 
-ls -lah data;
+ls -lah .;
